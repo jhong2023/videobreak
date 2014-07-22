@@ -12,7 +12,8 @@ function load() {
   var vid = getParameterByName("vid");
   if (vid) {
     loadPlayer(vid);
-    loadShots(vid);
+    // loadShots(vid);
+    shots = [2.10, 3.20, 10.50, 15.33];
     timeoutId = setTimeout(function() {
       console.log(index);
       console.log(shots);
@@ -23,6 +24,7 @@ function load() {
       ytplayer.playVideo();
     }, 1000);
   }
+  document.getElementById('preBtn').disabled = true;
 }
 
 function displayTime(time) {
@@ -136,7 +138,6 @@ function getParameterByName(name) {
     return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-document.getElementById('preBtn').disabled = true;
 
 function updatePlayerInfo(ytplayer) {
   if (!ytplayer || !ytplayer.getDuration) {
