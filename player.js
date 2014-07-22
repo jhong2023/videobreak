@@ -71,6 +71,7 @@ function jump(t) {
   }, 3000);
   ytplayer.playVideo();
   displayTime(t);
+  $('#overlay').hide();
   clearTimeout(timeoutId);
   timeoutId = setTimeout(function() {
     ytplayer.pauseVideo();
@@ -162,11 +163,9 @@ function onYouTubePlayerReady(playerId) {
 }
 
 function loadPlayer(videoID) {
-  // Lets Flash from another domain call JavaScript
   var params = { allowScriptAccess: 'always' };
   var atts = { id: 'ytPlayer' };
   swfobject.embedSWF('//www.youtube.com/v/' + videoID +
                      '?version=3&enablejsapi=1&playerapiid=player1&&el=embedded&forced_experiments=no_ads',
                      'video', '720', '480', '9', null, null, params, atts);
-
 }
