@@ -67,7 +67,7 @@ function jump(t) {
   ytplayer.seekTo(t - 3);
   clearTimeout(flashTimeout);
   flashTimeout = setTimeout(function() {
-    flash();
+    flash(ytplayer);
   }, 3000);
   ytplayer.playVideo();
   displayTime(t);
@@ -78,9 +78,11 @@ function jump(t) {
   }, 6000);
 }
 
-function flash() {
+function flash(ytplayer) {
   $('#overlay').show();
+  ytplayer.pauseVideo();
   flashTimeout = setTimeout(function() {
+    ytplayer.playVideo();
     $('#overlay').hide();
   }, 800);
 }
