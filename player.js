@@ -1,7 +1,7 @@
 google.load('jquery', '1');
 google.load('swfobject', '2.1');
 
-var shots = [];
+var shots = ['3.00']; // dummy shot 1
 var results = [];
 var index = 0;
 var timeoutId;
@@ -12,26 +12,26 @@ function load() {
   var vid = getParameterByName("vid");
   if (vid) {
     loadPlayer(vid);
-    // loadShots(vid);
-    shots = [2.10, 3.20, 10.50, 15.33];
-    timeoutId = setTimeout(function() {
-      console.log(index);
-      console.log(shots);
-      var t = shots[index];
-      displayTime(t);
+    loadShots(vid);
+    setTimeout(function() {
       var ytplayer = $('#ytPlayer').get(0);
-      ytplayer.seekTo(t - 3);
+      ytplayer.seekTo(shots[index] - 3);
       ytplayer.playVideo();
+      displayTime(shots[index]);
     }, 1000);
   }
   document.getElementById('preBtn').disabled = true;
 }
 
 function displayTime(time) {
-  var t = parseFloat(time);
+  $('#breaktime').html(formatTime(parseFloat(time)));
+  $('#current-break').html("Break " + (index + 1) + " of " + shots.length);
+}
+
+function formatTime(t) {
   var minutes = Math.floor(t/60);
-  var seconds = t.toFixed(0) - 60 * minutes;
-  $('#breaktime').html(t + ' (' + minutes + ':' + seconds + ')');
+  var seconds = t - 60 * minutes;
+  return minutes + ':' + seconds.toFixed(2);
 }
 
 function play(){
@@ -45,21 +45,12 @@ function pause(){
 }
 
 function loadShots(vid) {
-  var client = new XMLHttpRequest();
-  client.open('GET', '/shot/' + vid);
-  client.onreadystatechange = function() {
-    if (shots.length > 0) {
-      return;
-    }
-    var text = client.responseText;
-    var ss = text.split('\n');
-    for(var i in ss) {
-      if (ss[i]) {
-        shots.push( (parseInt(ss[i]) / 1000).toFixed(2) );
-      }
+  var tmp_shots = shot_map[vid];
+  if (tmp_shots) {
+    for(var i in tmp_shots) {
+      shots.push( (tmp_shots[i] / 1000).toFixed(2) );
     }
   }
-  client.send();
 }
 
 function jump(t) {
@@ -67,11 +58,10 @@ function jump(t) {
   ytplayer.seekTo(t - 3);
   clearTimeout(flashTimeout);
   flashTimeout = setTimeout(function() {
-    flash(ytplayer);
+    flash();
   }, 3000);
   ytplayer.playVideo();
-  displayTime(t);
-  $('#overlay').hide();
+  displayTime(shots[index]);
   clearTimeout(timeoutId);
   timeoutId = setTimeout(function() {
     ytplayer.pauseVideo();
@@ -80,9 +70,7 @@ function jump(t) {
 
 function flash(ytplayer) {
   $('#overlay').show();
-  ytplayer.pauseVideo();
   flashTimeout = setTimeout(function() {
-    ytplayer.playVideo();
     $('#overlay').hide();
   }, 800);
 }
@@ -90,17 +78,17 @@ function flash(ytplayer) {
 function setResult(val){
   results[index] = val;
   var shot_html = "";
-  var yes = [];
-  var no = [];
+  var good = [];
+  var bad = [];
   for(var i in results) {
     if (results[i] === 1) {
-      yes.push(shots[i]);
+      good.push(shots[i]);
     } else {
-      no.push(shots[i]);
+      bad.push(shots[i]);
     }
   }
-  shot_html += 'Good breaks:&nbsp;&nbsp;'  + yes.join(', ') + '<br>';
-  shot_html += 'Bad breaks:&nbsp;&nbsp;&nbsp;'  + no.join(', ') + '<br>';
+  shot_html += 'Good breaks:&nbsp;&nbsp;'  + good.join(', ') + '<br>';
+  shot_html += 'Bad breaks:&nbsp;&nbsp;&nbsp;'  + bad.join(', ') + '<br>';
   document.getElementById('result').innerHTML = shot_html;
   setTimeout(function() {
     document.getElementsByName('question')[0].checked = false;
@@ -110,6 +98,7 @@ function setResult(val){
 }
 
 function next() {
+  console.log(index + " " + shots[index]);
   if (index === shots.length - 1) {
     return;
   }
@@ -147,7 +136,7 @@ function updatePlayerInfo(ytplayer) {
     return;
   }
   var curTime = ytplayer.getCurrentTime();
-  $('#current-time').text(curTime.toFixed(2));
+  $('#current-time').text(formatTime(curTime));
 }
 
 function onYouTubePlayerReady(playerId) {
@@ -165,9 +154,11 @@ function onYouTubePlayerReady(playerId) {
 }
 
 function loadPlayer(videoID) {
+  // Lets Flash from another domain call JavaScript
   var params = { allowScriptAccess: 'always' };
   var atts = { id: 'ytPlayer' };
   swfobject.embedSWF('//www.youtube.com/v/' + videoID +
                      '?version=3&enablejsapi=1&playerapiid=player1&&el=embedded&forced_experiments=no_ads',
                      'video', '720', '480', '9', null, null, params, atts);
+
 }
