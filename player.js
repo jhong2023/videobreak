@@ -1,7 +1,7 @@
 google.load('jquery', '1');
 google.load('swfobject', '2.1');
 
-var shots = ['3.00']; // dummy shot 1
+var shots = ['6.00']; // dummy shot 1
 var results = [];
 var index = 0;
 var timeoutId;
@@ -55,17 +55,17 @@ function loadShots(vid) {
 
 function jump(t) {
   var ytplayer = $('#ytPlayer').get(0);
-  ytplayer.seekTo(t - 3);
+  ytplayer.seekTo(t - 5);
   clearTimeout(flashTimeout);
   flashTimeout = setTimeout(function() {
     flash();
-  }, 3000);
+  }, 5000);
   ytplayer.playVideo();
   displayTime(shots[index]);
   clearTimeout(timeoutId);
   timeoutId = setTimeout(function() {
     ytplayer.pauseVideo();
-  }, 6000);
+  }, 10000);
 }
 
 function flash(ytplayer) {
