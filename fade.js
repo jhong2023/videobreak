@@ -1,7 +1,7 @@
 google.load('jquery', '1');
 google.load('swfobject', '2.1');
 
-var shots = [];
+var shots = ['6.00']; // dummy shot
 var results = [];
 var index = 0;
 var fadeInTimeOut;
