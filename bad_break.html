@@ -1,0 +1,136 @@
+<html>
+<head>
+  <style type="text/css">
+    #overlay { position:fixed; top:30px; left:10px; width:715px; height:260px; background:#000; z-index:50;
+        color:#fff; font-size:85px; padding: 90px 0; text-align:center;
+        opacity:0; transition: opacity 1s linear;}
+    #adbreak { position:fixed; top:30px; left:10px; width:715px; height:300px; background:#87CEEB; z-index:60;
+        color:#000; font-size:85px; padding: 60px 0; text-align:center; opacity:1; display:none; }
+  </style>
+  <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+</head>
+<body>
+<div style="font-size:85%;">
+Tip: To avoid ads during evaluation, you can join <a href='https://www.youtube.com/experiments?action_add=Add&addme=no_ads'>no_ads experiment</a>.</div>
+<div id="overlay"></div>
+<div id="adbreak">Bad break?</div>
+<div id="video"></div>
+<div style="color:gray;width:720px;">
+  Current exact time: <span id="current-time"></span>
+  <span id="current-break" style="float:right;">Break 0 of 0</span>
+</div>
+<br/>
+<div><b>Current break to evaluate</b></div>
+<div>
+  Is <span id='breaktime' style="font-weight:bold;"></span> a bad break?
+  <button onclick="replay();">Replay</button>
+  <br/>
+  <input type='radio' name='question' value='1' onclick='setResult(1)'>Yes
+  <br/>
+  <input type='radio' name='question' value='0' onclick='setResult(0)'>No
+</div>
+<script>
+var start_play_ad_time;
+var break_time;
+var show_ads = true;
+google.load('jquery', '1');
+google.load('swfobject', '2.1');
+google.setOnLoadCallback(load);
+function load() {
+  var vid = getParameterByName("vid");
+  break_time = parseInt(getParameterByName("break")) / 1000;
+  $('#breaktime').text(formatTime(break_time));
+  // Fade out 0.5 seconds. It takes 0.03 second from event triggering to excutiong.
+  start_play_ad_time = break_time - 0.53;
+  console.log(break_time);
+  loadPlayer(vid);
+  setTimeout(function() {
+    var ytplayer = $('#ytPlayer').get(0);
+    ytplayer.seekTo(break_time - 5);
+    ytplayer.playVideo();
+  }, 1000);
+}
+
+function replay(){
+  var ytplayer = $('#ytPlayer').get(0);
+  ytplayer.seekTo(break_time - 5);
+  ytplayer.playVideo();
+  show_ads = true;
+}
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function formatTime(t) {
+  var minutes = Math.floor(t/60);
+  var seconds = t - 60 * minutes;
+  return minutes + ':' + seconds.toFixed(2);
+}
+
+function updatePlayerInfo(ytplayer) {
+  if (!ytplayer || !ytplayer.getDuration) {
+    return;
+  }
+  var curTime = ytplayer.getCurrentTime();
+  if (show_ads && curTime > start_play_ad_time) {
+    show_ads = false;
+    showAds();
+  }
+  $('#current-time').text(formatTime(curTime));
+}
+
+function showAds() {
+  var ytplayer = $('#ytPlayer').get(0);
+  fadeOut();
+  breakTimeOut = setTimeout(function(){
+    ytplayer.pauseVideo();
+  }, 500);
+  breakTimeOut = setTimeout(function(){
+    $('#adbreak').show();
+  }, 1000);
+  fadeInTimeOut = setTimeout(function(){
+    $('#adbreak').hide();
+    fadeIn();
+  }, 3000);
+  playTimeOut = setTimeout(function(){
+    ytplayer.playVideo();
+  }, 3500);
+}
+
+function fadeOut() {
+  $('#overlay').css('opacity',  '1');
+}
+
+function fadeIn() {
+  $('#overlay').css('opacity',  '0');
+}
+function onYouTubePlayerReady(playerId) {
+  var ytplayer = $('#ytPlayer').get(0);
+  if (!ytplayer) {
+    console.error(
+        'YouTube player is not loaded when onYouTubePlayerReady is called!');
+    return;
+  }
+  var step = function() {
+    updatePlayerInfo(ytPlayer);
+    window.requestAnimationFrame(step);
+  };
+  step();
+}
+
+function loadPlayer(videoID) {
+  // Lets Flash from another domain call JavaScript
+  var params = { allowScriptAccess: 'always' };
+  var atts = { id: 'ytPlayer' };
+  swfobject.embedSWF('//www.youtube.com/v/' + videoID +
+                     '?version=3&enablejsapi=1&playerapiid=player1&&el=embedded&forced_experiments=no_ads',
+                     'video', '720', '480', '9', null, null, params, atts);
+
+}
+</script>
+</body>
+</html>
