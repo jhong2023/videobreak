@@ -20,7 +20,6 @@ Tip: To avoid ads during evaluation, you can join <a href='https://www.youtube.c
   <span id="current-break" style="float:right;">Break 0 of 0</span>
 </div>
 <br/>
-<div><b>Current break to evaluate</b></div>
 <div>
   Is <span id='breaktime' style="font-weight:bold;"></span> a bad break?
   <button onclick="replay();">Replay</button>
@@ -29,6 +28,8 @@ Tip: To avoid ads during evaluation, you can join <a href='https://www.youtube.c
   <br/>
   <input type='radio' name='question' value='0' onclick='setResult(0)'>No
 </div>
+<br/>
+<div id='result'></div>
 <script>
 var start_play_ad_time;
 var break_time;
@@ -46,14 +47,14 @@ function load() {
   loadPlayer(vid);
   setTimeout(function() {
     var ytplayer = $('#ytPlayer').get(0);
-    ytplayer.seekTo(break_time - 5);
+    ytplayer.seekTo(break_time - 10);
     ytplayer.playVideo();
   }, 1000);
 }
 
 function replay(){
   var ytplayer = $('#ytPlayer').get(0);
-  ytplayer.seekTo(break_time - 5);
+  ytplayer.seekTo(break_time - 10);
   ytplayer.playVideo();
   show_ads = true;
 }
@@ -63,6 +64,14 @@ function getParameterByName(name) {
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
     return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function setResult(val){
+  if (val === 1) {
+    $('#result').html('Result: Yes <br/>  Please copy result to the trix.');
+  } else {
+    $('#result').html('Result: No  <br/>  Please copy result to the trix.');
+  }
 }
 
 function formatTime(t) {
