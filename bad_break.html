@@ -13,7 +13,7 @@
 <div style="font-size:85%;">
 Tip: To avoid ads during evaluation, you can join <a href='https://www.youtube.com/experiments?action_add=Add&addme=no_ads'>no_ads experiment</a>.</div>
 <div id="overlay"></div>
-<div id="adbreak">Bad break?</div>
+<div id="adbreak">Good/OK/Bad break?</div>
 <div id="video"></div>
 <div style="color:gray;width:720px;">
   Current exact time: <span id="current-time"></span>
@@ -24,9 +24,11 @@ Tip: To avoid ads during evaluation, you can join <a href='https://www.youtube.c
   Is <span id='breaktime' style="font-weight:bold;"></span> a bad break?
   <button onclick="replay();">Replay</button>
   <br/>
-  <input type='radio' name='question' value='1' onclick='setResult(1)'>Yes
+  <input type='radio' name='question' value='2' onclick='setResult(2)'>Good
   <br/>
-  <input type='radio' name='question' value='0' onclick='setResult(0)'>No
+  <input type='radio' name='question' value='1' onclick='setResult(1)'>Ok
+  <br/>
+  <input type='radio' name='question' value='0' onclick='setResult(0)'>Bad
 </div>
 <br/>
 <div id='result'></div>
@@ -67,10 +69,12 @@ function getParameterByName(name) {
 }
 
 function setResult(val){
-  if (val === 1) {
-    $('#result').html('Result: Yes <br/>  Please copy result to the trix.');
+  if (val === 2) {
+    $('#result').html('Result: Good <br/>  Please copy result to the trix.');
+  } else if (val == 1){
+    $('#result').html('Result: Ok  <br/>  Please copy result to the trix.');
   } else {
-    $('#result').html('Result: No  <br/>  Please copy result to the trix.');
+    $('#result').html('Result: Bad  <br/>  Please copy result to the trix.');
   }
 }
 
