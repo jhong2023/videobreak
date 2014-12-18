@@ -21,12 +21,12 @@ Tip: To avoid ads during evaluation, you can join <a href='https://www.youtube.c
 </div>
 <br/>
 <div>
-  Is <span id='breaktime' style="font-weight:bold;"></span> a good break?
+  Is <span id='breaktime' style="font-weight:bold;"></span> a really bad break?
   <button onclick="replay();">Replay</button>
   <br/>
-  <input type='radio' name='question' value='2' onclick='setResult(2)'>Good
+  <input type='radio' name='question' value='2' onclick='setResult(1)'>Yes
   <br/>
-  <input type='radio' name='question' value='0' onclick='setResult(0)'>Bad
+  <input type='radio' name='question' value='0' onclick='setResult(0)'>No
 </div>
 <br/>
 <div id='result'></div>
@@ -67,12 +67,10 @@ function getParameterByName(name) {
 }
 
 function setResult(val){
-  if (val === 2) {
-    $('#result').html('Result: Good <br/>  Please copy result to the trix.');
-  } else if (val == 1){
-    $('#result').html('Result: Ok  <br/>  Please copy result to the trix.');
+  if (val === 1) {
+    $('#result').html('Result: Yes <br/>  Please copy result to the trix.');
   } else {
-    $('#result').html('Result: Bad  <br/>  Please copy result to the trix.');
+    $('#result').html('Result: No  <br/>  Please copy result to the trix.');
   }
 }
 
